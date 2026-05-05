@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agente Datasul - Especialista ERP TOTVS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:       #0f0f0d;
+      --ink2:      #3a3a36;
+      --ink3:      #7a7a74;
+      --ink4:      #b0afa8;
+      --paper:     #f7f6f1;
+      --paper2:    #eeecea;
+      --paper3:    #e4e2dc;
+      --accent:    #1a4f8a;
+      --accent-l:  #dce8f7;
+      --green:     #1a6641;
+      --green-l:   #d4ede0;
+      --red:       #8a1a1a;
+      --red-l:     #f7dcdc;
+      --mono:      'IBM Plex Mono', monospace;
+      --sans:      'IBM Plex Sans', sans-serif;
+      --r:         4px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--paper); font-family: var(--sans); color: var(--ink); font-size: 14px; }
+
+    /* ── TELA DE CONFIGURACAO ─────────────────────────────────── */
+    #config-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+      background: var(--paper);
+    }
+    .config-card {
+      width: 100%; max-width: 480px;
+      background: white;
+      border: 1px solid var(--paper3);
+      border-radius: 8px;
+      padding: 40px 36px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.06);
+    }
+    .config-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .config-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .config-desc {
+      font-size: 13px;
+      color: var(--ink3);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .config-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink2);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    .config-input {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      padding: 10px 13px;
+      border: 1px solid var(--paper3);
+      border-radius: var(--r);
+      background: var(--paper);
+      color: var(--ink);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      margin-bottom: 8px;
+    }
+    .config-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,79,138,0.1); }
+    .config-hint {
+      font-size: 11.5px;
+      color: var(--ink4);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .config-hint a { color: var(--accent); text-decoration: none; }
+    .config-hint a:hover { text-decoration: underline; }
+    .config-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--r);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .config-btn:hover { opacity: 0.88; }
+    .config-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .config-error {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--red);
+      background: var(--red-l);
+      border: 1px solid #f0c8c8;
+      border-radius: var(--r);
+      padding: 9px 12px;
+      display: none;
+    }
+    .config-security {
+      margin-top: 20px;
+      padding: 12px 14px;
+      background: var(--paper);
+      border: 1px solid var(--paper3);
+      border-radius: var(--r);
+      font-size: 11.5px;
+      color: var(--ink3);
+      line-height: 1.55;
+    }
+    .config-security strong { color: var(--ink2); }
+
+    /* ── LAYOUT PRINCIPAL ────────────────────────────────────────── */
+    #chat-screen {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat-screen.active { display: flex; }
+
+    /* Header */
+    #topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      height: 52px;
+      background: white;
+      border-bottom: 1px solid var(--paper3);
+      flex-shrink: 0;
+    }
+    #topbar-left { display: flex; align-items: center; gap: 14px; }
+    #topbar-brand {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    #topbar-sep { width: 1px; height: 18px; background: var(--paper3); }
+    #topbar-sub { font-size: 12px; color: var(--ink3); }
+    #topbar-right { display: flex; align-items: center; gap: 8px; }
+    .pill {
+      font-size: 10.5px;
+      font-family: var(--mono);
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--paper3);
+      color: var(--ink3);
+      letter-spacing: 0.04em;
+    }
+    .pill.active { color: var(--green); border-color: #b2ddc6; background: var(--green-l); }
+    #btn-logout {
+      font-size: 12px; color: var(--ink3);
+      background: transparent; border: 1px solid var(--paper3);
+      border-radius: var(--r); padding: 4px 10px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    #btn-logout:hover { background: var(--paper2); }
+    #btn-clear {
+      font-size: 12px; color: var(--ink3);
+      background: transparent; border: 1px solid var(--paper3);
+      border-radius: var(--r); padding: 4px 10px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    #btn-clear:hover { background: var(--paper2); }
+    #btn-guia {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-family: var(--sans); font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-l);
+      border: 1px solid #b8d4f0;
+      border-radius: var(--r); padding: 4px 11px;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+    #btn-guia:hover { background: #c8dff5; box-shadow: 0 0 0 3px rgba(26,79,138,0.08); }
+    #btn-guia svg { flex-shrink: 0; }
+    #config-guia-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 18px;
+      font-size: 12px; color: var(--accent);
+      background: var(--accent-l); border: 1px solid #b8d4f0;
+      border-radius: var(--r); padding: 7px 13px;
+      text-decoration: none; font-weight: 500;
+      transition: background 0.15s;
+      width: 100%; justify-content: center;
+    }
+    #config-guia-link:hover { background: #c8dff5; }
+
+    /* Mensagens */
+    #messages {
+      flex: 1; overflow-y: auto;
+      padding: 28px 0;
+      display: flex; flex-direction: column;
+      gap: 0;
+    }
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: var(--paper3); border-radius: 4px; }
+
+    .msg-row {
+      display: flex;
+      padding: 0 24px;
+      margin-bottom: 20px;
+    }
+    .msg-row.user { justify-content: flex-end; }
+    .msg-row.assistant { justify-content: flex-start; }
+
+    .msg-inner {
+      display: flex; flex-direction: column; gap: 4px;
+      max-width: min(680px, 90%);
+    }
+    .msg-row.user .msg-inner { align-items: flex-end; }
+    .msg-row.assistant .msg-inner { align-items: flex-start; }
+
+    .msg-author {
+      font-size: 10.5px;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink4);
+      padding: 0 3px;
+    }
+    .search-tag {
+      font-size: 10.5px;
+      font-family: var(--mono);
+      color: var(--green);
+      background: var(--green-l);
+      border: 1px solid #b2ddc6;
+      border-radius: 20px;
+      padding: 2px 9px;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+    .bubble {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+    .msg-row.user .bubble {
+      background: var(--accent);
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+    .msg-row.assistant .bubble {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--paper3);
+      border-bottom-left-radius: 2px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Typing */
+    .typing-bubble {
+      display: flex; gap: 5px; align-items: center;
+      padding: 14px 18px;
+      background: white;
+      border: 1px solid var(--paper3);
+      border-radius: 8px;
+      border-bottom-left-radius: 2px;
+    }
+    .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--ink4);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+    .err-bubble {
+      padding: 11px 15px;
+      background: var(--red-l);
+      border: 1px solid #f0c8c8;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--red);
+      white-space: pre-wrap;
+    }
+
+    /* Input area */
+    #input-bar {
+      padding: 14px 24px 18px;
+      border-top: 1px solid var(--paper3);
+      background: white;
+      flex-shrink: 0;
+    }
+    #input-row {
+      display: flex; gap: 8px; align-items: flex-end;
+      max-width: 800px; margin: 0 auto;
+    }
+    #user-input {
+      flex: 1; min-height: 40px; max-height: 140px; resize: none;
+      font-family: var(--sans); font-size: 13.5px;
+      padding: 10px 14px;
+      border: 1px solid var(--paper3);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.55;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    #user-input::placeholder { color: var(--ink4); }
+    #user-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,79,138,0.08); }
+    #send-btn {
+      height: 40px; padding: 0 20px;
+      background: var(--accent); color: white;
+      border: none; border-radius: 6px;
+      font-family: var(--sans); font-size: 13.5px; font-weight: 500;
+      cursor: pointer; flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    #send-btn:hover:not(:disabled) { opacity: 0.88; }
+    #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    #input-hint {
+      max-width: 800px; margin: 7px auto 0;
+      font-size: 11px; color: var(--ink4);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     TELA 1: CONFIGURACAO (inserir API key)
+     ════════════════════════════════════════════════════ -->
+<div id="config-screen">
+  <div class="config-card">
+    <div class="config-logo">TOTVS Datasul &mdash; Agente Especialista</div>
+    <div class="config-title">Insira sua chave de API</div>
+    <div class="config-desc">
+      Para usar o agente, voce precisa de uma chave da Anthropic (Claude).
+      A chave fica armazenada somente no seu navegador e nunca e enviada para servidores externos.
+    </div>
+
+    <label class="config-label" for="api-key-input">Chave de API (API Key)</label>
+    <input
+      type="password"
+      id="api-key-input"
+      class="config-input"
+      placeholder="sk-ant-api03-..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <div class="config-hint">
+      Nao tem uma chave ainda?
+      <a href="https://console.anthropic.com" target="_blank" rel="noopener">Crie sua conta gratis em console.anthropic.com</a>.
+      A chave comeca com <code>sk-ant-</code>.
+    </div>
+
+    <button class="config-btn" id="config-btn" onclick="iniciarAgente()">Acessar o Agente</button>
+    <div class="config-error" id="config-error"></div>
+
+    <div class="config-security">
+      <strong>Privacidade:</strong> sua chave e salva apenas no <em>localStorage</em> do seu navegador.
+      Ela e enviada diretamente para a API da Anthropic a cada mensagem, sem intermediarios.
+      Ao clicar em "Sair", a chave e removida do navegador imediatamente.
+    </div>
+    <a id="config-guia-link" href="guia.html" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Ver Guia de Uso antes de comecar
+    </a>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     TELA 2: CHAT
+     ════════════════════════════════════════════════════ -->
+<div id="chat-screen">
+  <div id="topbar">
+    <div id="topbar-left">
+      <span id="topbar-brand">Agente Datasul</span>
+      <div id="topbar-sep"></div>
+      <span id="topbar-sub">Especialista ERP TOTVS</span>
+    </div>
+    <div id="topbar-right">
+      <span class="pill active">Web Search ativo</span>
+      <a id="btn-guia" href="guia.html" target="_blank" rel="noopener" title="Abrir Guia de Uso">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Guia de Uso
+      </a>
+      <button id="btn-clear" onclick="limparConversa()">Nova conversa</button>
+      <button id="btn-logout" onclick="sair()">Sair</button>
+    </div>
+  </div>
+
+  <div id="messages"></div>
+
+  <div id="input-bar">
+    <div id="input-row">
+      <textarea
+        id="user-input"
+        placeholder="Digite sua duvida sobre o Datasul..."
+        rows="1"
+      ></textarea>
+      <button id="send-btn" onclick="enviarMensagem()">Enviar</button>
+    </div>
+    <div id="input-hint">Enter para enviar &nbsp;&middot;&nbsp; Shift+Enter para nova linha</div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// CONSTANTES
+// ─────────────────────────────────────────────────────────────
+const API_URL = "https://api.anthropic.com/v1/messages";
+const MODEL   = "claude-sonnet-4-6";
+const MAX_TOKENS = 4000;
+
+const SYSTEM_PROMPT = `Voce e um especialista em ERP Datasul da TOTVS.
+
+IDENTIDADE E OBJETIVO:
+Ajude usuarios de todos os niveis (iniciante, intermediario e avancado) a entender, configurar, consultar e resolver duvidas relacionadas ao Datasul, processos de negocio e parametrizacoes.
+
+FONTES OBRIGATORIAS:
+Sempre que a pergunta envolver documentacao, rotinas, parametros, funcoes, programas, APIs ou processos do Datasul, pesquise primeiro em fontes oficiais da TOTVS, priorizando:
+- tdn.totvs.com
+- centraldeatendimento.totvs.com
+- documentacao oficial TOTVS relacionada ao Datasul
+
+REGRAS ABSOLUTAS:
+1. Priorize conteudo oficial e mais recente da TOTVS.
+2. Informe sempre o nome da rotina, funcao ou programa encontrado.
+3. Resuma em linguagem simples antes de entrar no detalhe tecnico.
+4. Quando houver duvida entre versoes, diga explicitamente: "A versao precisa ser validada."
+5. Nunca invente parametros, nomes de programas ou comportamentos nao confirmados na fonte oficial.
+6. Sempre que possivel, cite a pagina oficial consultada (URL).
+7. Quando relevante, mencione opinioes e praticas conhecidas de consultores da area.
+
+FLUXO OBRIGATORIO:
+1. IDENTIFICACAO DO MODULO: Antes de responder tecnicamente, verifique se o modulo Datasul foi informado. Se nao foi informado, pergunte de forma objetiva: "Para te orientar corretamente no Datasul, voce pode me informar qual modulo esta utilizando? (Ex: Financeiro, Estoque, Faturamento, Compras...)" Nao forneca resposta tecnica completa ate obter essa informacao.
+2. APOIO NA IDENTIFICACAO: Se o usuario nao souber o modulo, faca perguntas sobre tipo de processo, tipo de documento e objetivo para sugerir o modulo mais provavel.
+3. DIRECIONAMENTO: Apos identificar o modulo, contextualize a resposta dentro dele. Evite respostas genericas.
+
+ESTRUTURA OBRIGATORIA DA RESPOSTA (quando o modulo for conhecido):
+a) RESUMO EXECUTIVO: 1 a 2 frases sobre o que sera tratado.
+b) EXPLICACAO SIMPLES: Conceito claro e acessivel.
+c) DETALHAMENTO TECNICO: Como o Datasul trata o processo, regras envolvidas, pontos de atencao.
+d) COMO CONSULTAR NO SISTEMA: Programa envolvido, caminho no menu, tabelas relacionadas, parametros relevantes, nome tecnico da rotina.
+e) CONSULTA NA TDN: Como buscar na TDN, termos corretos para pesquisa.
+f) EXEMPLO PRATICO: Cenario real de uso, como o usuario aplicaria no dia a dia.
+g) BOAS PRATICAS E CUIDADOS: Riscos comuns, impactos em outros modulos, necessidade de testes em homologacao, recomendacao de backup quando aplicavel.
+
+RESTRICOES DE FORMATO:
+- Sem emojis ou icones.
+- Linguagem clara, didatica e profissional.
+- Sem linguagem informal.
+- Nunca responder de forma generica quando faltar contexto.
+- Se faltar contexto e nao houver fontes verificadas, busque dados e opinioes de consultores especializados.`;
+
+// ─────────────────────────────────────────────────────────────
+// ESTADO
+// ─────────────────────────────────────────────────────────────
+let apiKey  = "";
+let history = [];
+
+// ─────────────────────────────────────────────────────────────
+// INICIALIZACAO
+// ─────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", () => {
+  // Verifica se ja existe chave salva
+  const saved = localStorage.getItem("datasul_api_key");
+  if (saved) {
+    apiKey = saved;
+    mostrarChat();
+  }
+  document.getElementById("user-input").addEventListener("keydown", teclaInput);
+  document.getElementById("user-input").addEventListener("input", autoResize);
+  document.getElementById("api-key-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") iniciarAgente();
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+// CONFIGURACAO / LOGIN
+// ─────────────────────────────────────────────────────────────
+function iniciarAgente() {
+  const input = document.getElementById("api-key-input");
+  const errDiv = document.getElementById("config-error");
+  const btn = document.getElementById("config-btn");
+  const val = input.value.trim();
+
+  errDiv.style.display = "none";
+
+  if (!val) {
+    errDiv.textContent = "Informe a chave de API antes de continuar.";
+    errDiv.style.display = "block";
+    return;
+  }
+  if (!val.startsWith("sk-ant-")) {
+    errDiv.textContent = 'Chave invalida. Chaves da Anthropic comecam com "sk-ant-".';
+    errDiv.style.display = "block";
+    return;
+  }
+
+  apiKey = val;
+  localStorage.setItem("datasul_api_key", apiKey);
+  mostrarChat();
+}
+
+function mostrarChat() {
+  document.getElementById("config-screen").style.display = "none";
+  document.getElementById("chat-screen").classList.add("active");
+  adicionarBoasVindas();
+  document.getElementById("user-input").focus();
+}
+
+function sair() {
+  localStorage.removeItem("datasul_api_key");
+  apiKey = "";
+  history = [];
+  document.getElementById("messages").innerHTML = "";
+  document.getElementById("chat-screen").classList.remove("active");
+  document.getElementById("config-screen").style.display = "flex";
+  document.getElementById("api-key-input").value = "";
+}
+
+// ─────────────────────────────────────────────────────────────
+// MENSAGENS INICIAIS
+// ─────────────────────────────────────────────────────────────
+function adicionarBoasVindas() {
+  if (document.getElementById("messages").childElementCount > 0) return;
+  renderMensagem(
+    "assistant",
+    "Bom dia. Sou um especialista em ERP Datasul com acesso a fontes oficiais da TOTVS, incluindo a TDN e a Central de Atendimento.\n\nPara orientar corretamente, preciso saber: qual modulo do Datasul voce esta utilizando?\n\nExemplos: Financeiro, Estoque, Faturamento, Compras, Fiscal, Contabilidade, RH, Manufatura.",
+    false
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// UI — RENDERIZACAO
+// ─────────────────────────────────────────────────────────────
+function renderMensagem(role, text, usedSearch) {
+  const container = document.getElementById("messages");
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
+
+  const inner = document.createElement("div");
+  inner.className = "msg-inner";
+
+  const author = document.createElement("div");
+  author.className = "msg-author";
+  author.textContent = role === "user" ? "Voce" : "Agente Datasul";
+  inner.appendChild(author);
+
+  if (role === "assistant" && usedSearch) {
+    const tag = document.createElement("div");
+    tag.className = "search-tag";
+    tag.textContent = "Consultou TDN / TOTVS";
+    inner.appendChild(tag);
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+  inner.appendChild(bubble);
+
+  row.appendChild(inner);
+  container.appendChild(row);
+  rolarParaBaixo();
+  return row;
+}
+
+function renderTyping() {
+  const container = document.getElementById("messages");
+  const row = document.createElement("div");
+  row.className = "msg-row assistant";
+  row.id = "typing-row";
+
+  const inner = document.createElement("div");
+  inner.className = "msg-inner";
+
+  const author = document.createElement("div");
+  author.className = "msg-author";
+  author.textContent = "Agente Datasul";
+
+  const tag = document.createElement("div");
+  tag.className = "search-tag";
+  tag.textContent = "Consultando fontes TOTVS...";
+
+  const typing = document.createElement("div");
+  typing.className = "typing-bubble";
+  typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+
+  inner.appendChild(author);
+  inner.appendChild(tag);
+  inner.appendChild(typing);
+  row.appendChild(inner);
+  container.appendChild(row);
+  rolarParaBaixo();
+}
+
+function removerTyping() {
+  const el = document.getElementById("typing-row");
+  if (el) el.remove();
+}
+
+function renderErro(msg) {
+  const container = document.getElementById("messages");
+  const row = document.createElement("div");
+  row.className = "msg-row assistant";
+  const inner = document.createElement("div");
+  inner.className = "msg-inner";
+  const author = document.createElement("div");
+  author.className = "msg-author";
+  author.textContent = "Agente Datasul";
+  const bubble = document.createElement("div");
+  bubble.className = "err-bubble";
+  bubble.textContent = msg;
+  inner.appendChild(author);
+  inner.appendChild(bubble);
+  row.appendChild(inner);
+  container.appendChild(row);
+  rolarParaBaixo();
+}
+
+function rolarParaBaixo() {
+  const m = document.getElementById("messages");
+  m.scrollTop = m.scrollHeight;
+}
+
+function autoResize() {
+  const el = document.getElementById("user-input");
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 140) + "px";
+}
+
+function teclaInput(e) {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviarMensagem(); }
+  autoResize();
+}
+
+function limparConversa() {
+  history = [];
+  document.getElementById("messages").innerHTML = "";
+  adicionarBoasVindas();
+  document.getElementById("user-input").focus();
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENVIO DE MENSAGEM
+// ─────────────────────────────────────────────────────────────
+async function enviarMensagem() {
+  const input = document.getElementById("user-input");
+  const btn   = document.getElementById("send-btn");
+  const texto = input.value.trim();
+  if (!texto || btn.disabled) return;
+
+  input.value = "";
+  input.style.height = "auto";
+  btn.disabled = true;
+
+  renderMensagem("user", texto, false);
+  history.push({ role: "user", content: texto });
+  renderTyping();
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type":    "application/json",
+        "x-api-key":       apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model:      MODEL,
+        max_tokens: MAX_TOKENS,
+        system:     SYSTEM_PROMPT,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        messages:   history,
+      }),
+    });
+
+    removerTyping();
+
+    if (!resp.ok) {
+      let detalhe = "HTTP " + resp.status;
+      try {
+        const err = await resp.json();
+        if (err?.error?.message) detalhe = err.error.message;
+        else detalhe = JSON.stringify(err);
+      } catch (_) {}
+
+      if (resp.status === 401) {
+        renderErro("Chave de API invalida ou expirada.\nClique em 'Sair' e insira uma chave valida.\nDetalhe: " + detalhe);
+      } else {
+        renderErro("Erro na API Anthropic: " + detalhe);
+      }
+      history.pop();
+      btn.disabled = false;
+      return;
+    }
+
+    const data = await resp.json();
+    const blocks = data.content || [];
+    const textoFinal = blocks.filter(b => b.type === "text").map(b => b.text).join("\n").trim();
+    const usouSearch = blocks.some(b => b.type === "tool_use");
+
+    renderMensagem("assistant", textoFinal || "(Sem resposta gerada.)", usouSearch);
+    history.push({ role: "assistant", content: blocks });
+
+  } catch (err) {
+    removerTyping();
+    renderErro(
+      "Erro de conexao. Verifique sua internet e tente novamente.\nDetalhe: " + err.message
+    );
+    history.pop();
+  }
+
+  btn.disabled = false;
+  input.focus();
+}
+</script>
+</body>
+</html>
