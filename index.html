@@ -430,10 +430,10 @@
 // ─────────────────────────────────────────────────────────────
 const API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL   = "claude-sonnet-4-6";
-const MAX_TOKENS = 4000;
+const MAX_TOKENS = 2000;
 
 // Limite de pares de historico enviados a API (user+assistant = 1 par)
-const MAX_HISTORY_PAIRS = 6;
+const MAX_HISTORY_PAIRS = 4;
 
 const SYSTEM_PROMPT = `Especialista ERP Datasul TOTVS. Responda em portugues.
 
@@ -646,6 +646,40 @@ function limparConversa() {
 }
 
 // ─────────────────────────────────────────────────────────────
+// TRUNCAMENTO DE HISTORICO
+// Limita cada bloco de texto a MAX_CHARS_PER_MSG caracteres para
+// evitar que respostas longas estourem o rate limit de tokens.
+// ─────────────────────────────────────────────────────────────
+const MAX_CHARS_PER_MSG = 1200;
+
+function truncarHistorico(msgs) {
+  return msgs.map(msg => {
+    // Mensagem com conteúdo em string simples
+    if (typeof msg.content === "string") {
+      return {
+        role: msg.role,
+        content: msg.content.length > MAX_CHARS_PER_MSG
+          ? msg.content.slice(0, MAX_CHARS_PER_MSG) + "... [truncado]"
+          : msg.content
+      };
+    }
+    // Mensagem com conteúdo em array de blocos (respostas do assistente)
+    if (Array.isArray(msg.content)) {
+      const blocos = msg.content.map(bloco => {
+        if (bloco.type === "text" && typeof bloco.text === "string" && bloco.text.length > MAX_CHARS_PER_MSG) {
+          return { ...bloco, text: bloco.text.slice(0, MAX_CHARS_PER_MSG) + "... [truncado]" };
+        }
+        return bloco;
+      });
+      // Remove blocos tool_use e tool_result do histórico (economiza tokens, contexto já foi usado)
+      const blocosFiltrados = blocos.filter(b => b.type === "text");
+      return { role: msg.role, content: blocosFiltrados.length > 0 ? blocosFiltrados : blocos };
+    }
+    return msg;
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
 // ENVIO DE MENSAGEM
 // ─────────────────────────────────────────────────────────────
 async function enviarMensagem() {
@@ -676,8 +710,8 @@ async function enviarMensagem() {
         max_tokens: MAX_TOKENS,
         system:     SYSTEM_PROMPT,
         tools: [{ type: "web_search_20250305", name: "web_search" }],
-        // Envia apenas os ultimos MAX_HISTORY_PAIRS pares para controlar tokens
-        messages:   history.slice(-(MAX_HISTORY_PAIRS * 2)),
+        // Envia apenas os ultimos MAX_HISTORY_PAIRS pares, truncando textos longos
+        messages:   truncarHistorico(history.slice(-(MAX_HISTORY_PAIRS * 2))),
       }),
     });
 
