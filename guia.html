@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Como usar o Agente Datasul - Guia para Iniciantes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:    #0f0f0d;
+      --ink2:   #3a3a36;
+      --ink3:   #6a6a64;
+      --ink4:   #aaa9a2;
+      --paper:  #f7f6f1;
+      --paper2: #eeecea;
+      --paper3: #e2e0d8;
+      --accent: #1a4f8a;
+      --accent2:#dce8f7;
+      --green:  #1a6641;
+      --green2: #d4ede0;
+      --amber:  #7a4e00;
+      --amber2: #fdf0d4;
+      --red:    #8a1a1a;
+      --red2:   #f7dcdc;
+      --mono:   'IBM Plex Mono', monospace;
+      --sans:   'IBM Plex Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* ── HEADER ───────────────────────────────────────────── */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--paper3);
+      padding: 0 40px;
+      height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-brand {
+      font-family: var(--mono); font-size: 12px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+    }
+    .header-nav { display: flex; gap: 6px; }
+    .header-nav a {
+      font-size: 12.5px; color: var(--ink3);
+      text-decoration: none; padding: 5px 10px;
+      border-radius: 4px; transition: background 0.12s;
+    }
+    .header-nav a:hover { background: var(--paper2); }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      padding: 72px 40px 60px;
+      max-width: 760px; margin: 0 auto;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent2);
+      border: 1px solid #c0d8f0; border-radius: 20px;
+      padding: 4px 14px; margin-bottom: 22px;
+    }
+    .hero h1 {
+      font-size: 36px; font-weight: 600; line-height: 1.2;
+      letter-spacing: -0.5px; color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .hero p {
+      font-size: 16px; color: var(--ink3); line-height: 1.65;
+      max-width: 560px; margin: 0 auto 32px;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: var(--accent); color: white;
+      padding: 12px 28px; border-radius: 6px;
+      font-size: 14px; font-weight: 500;
+      text-decoration: none; letter-spacing: 0.01em;
+      transition: opacity 0.15s;
+    }
+    .hero-cta:hover { opacity: 0.88; }
+
+    /* ── LAYOUT CONTEUDO ─────────────────────────────────── */
+    .content {
+      max-width: 800px; margin: 0 auto; padding: 0 40px 80px;
+    }
+
+    /* ── INDICE ─────────────────────────────────────────── */
+    .toc {
+      background: white; border: 1px solid var(--paper3);
+      border-radius: 8px; padding: 28px 32px; margin-bottom: 52px;
+    }
+    .toc-title {
+      font-size: 12px; font-family: var(--mono); letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ink3); margin-bottom: 14px;
+    }
+    .toc ol { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+    .toc li { font-size: 14px; }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* ── SECOES ─────────────────────────────────────────── */
+    section { margin-bottom: 56px; }
+    .section-number {
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink4); margin-bottom: 6px;
+    }
+    section h2 {
+      font-size: 24px; font-weight: 600; color: var(--ink);
+      letter-spacing: -0.3px; margin-bottom: 14px;
+    }
+    section > p, section > .block { margin-bottom: 16px; }
+
+    /* ── BLOCO DE PASSO ─────────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+    .step {
+      display: flex; gap: 18px; align-items: flex-start;
+      background: white; border: 1px solid var(--paper3);
+      border-radius: 8px; padding: 20px 22px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--accent); color: white;
+      font-family: var(--mono); font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+    .step-desc { font-size: 13.5px; color: var(--ink2); line-height: 1.65; }
+    .step-desc code {
+      font-family: var(--mono); font-size: 12.5px;
+      background: var(--paper2); padding: 2px 6px; border-radius: 3px;
+      color: var(--accent);
+    }
+
+    /* ── CALLOUTS ───────────────────────────────────────── */
+    .callout {
+      border-radius: 6px; padding: 14px 18px;
+      font-size: 13.5px; line-height: 1.6; margin: 16px 0;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .callout.info    { background: var(--accent2); border: 1px solid #c0d8f0; color: var(--accent); }
+    .callout.ok      { background: var(--green2);  border: 1px solid #b2ddc6; color: var(--green); }
+    .callout.warn    { background: var(--amber2);  border: 1px solid #e8c97a; color: var(--amber); }
+    .callout.danger  { background: var(--red2);    border: 1px solid #f0c8c8; color: var(--red); }
+
+    /* ── SCREENSHOT SIMULADO ─────────────────────────────── */
+    .mockup {
+      border: 1px solid var(--paper3); border-radius: 8px;
+      overflow: hidden; margin: 20px 0;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+    .mockup-bar {
+      background: var(--paper2); padding: 9px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--paper3);
+    }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-dot.r { background: #ff6058; }
+    .mockup-dot.y { background: #ffbd2e; }
+    .mockup-dot.g { background: #28c841; }
+    .mockup-url {
+      flex: 1; background: white; border: 1px solid var(--paper3);
+      border-radius: 4px; padding: 3px 10px;
+      font-family: var(--mono); font-size: 11px; color: var(--ink3);
+    }
+    .mockup-body { background: white; padding: 24px 28px; }
+
+    /* ── CAMPO SIMULADO ─────────────────────────────────── */
+    .fake-field {
+      border: 1px solid var(--paper3); border-radius: 4px;
+      padding: 9px 12px; font-family: var(--mono); font-size: 12px;
+      color: var(--ink3); background: var(--paper); margin: 8px 0;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .fake-field-label { font-size: 12px; font-weight: 500; color: var(--ink2); margin-bottom: 4px; }
+    .fake-btn {
+      display: inline-block; padding: 8px 18px;
+      background: var(--accent); color: white;
+      border-radius: 4px; font-size: 13px; font-weight: 500;
+      margin-top: 10px; cursor: default;
+    }
+
+    /* ── EXEMPLO DE CONVERSA ───────────────────────────── */
+    .chat-example { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+    .chat-msg { max-width: 85%; }
+    .chat-msg.user { align-self: flex-end; }
+    .chat-msg.bot  { align-self: flex-start; }
+    .chat-label {
+      font-size: 10.5px; font-family: var(--mono); letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--ink4); padding: 0 3px;
+      margin-bottom: 3px;
+    }
+    .chat-msg.user .chat-label { text-align: right; }
+    .chat-bubble {
+      padding: 11px 15px; border-radius: 8px;
+      font-size: 13.5px; line-height: 1.65;
+    }
+    .chat-msg.user .chat-bubble {
+      background: var(--accent); color: white;
+      border-bottom-right-radius: 2px;
+    }
+    .chat-msg.bot .chat-bubble {
+      background: white; color: var(--ink);
+      border: 1px solid var(--paper3);
+      border-bottom-left-radius: 2px;
+      white-space: pre-wrap;
+    }
+
+    /* ── FAQ ───────────────────────────────────────────── */
+    .faq-item {
+      border-bottom: 1px solid var(--paper3); padding: 18px 0;
+    }
+    .faq-q { font-weight: 600; font-size: 14.5px; color: var(--ink); margin-bottom: 8px; cursor: pointer; }
+    .faq-q:hover { color: var(--accent); }
+    .faq-a { font-size: 13.5px; color: var(--ink2); line-height: 1.65; }
+
+    /* ── CHECKLIST ─────────────────────────────────────── */
+    .checklist { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+    .check-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 13.5px; color: var(--ink2);
+    }
+    .check-box {
+      flex-shrink: 0; width: 18px; height: 18px; border-radius: 3px;
+      border: 1.5px solid var(--paper3); margin-top: 2px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s; background: white;
+    }
+    .check-box.done { background: var(--accent); border-color: var(--accent); }
+    .check-box.done::after { content: ""; width: 8px; height: 5px; border: 2px solid white; border-top: none; border-right: none; transform: rotate(-45deg) translateY(-1px); display: block; }
+    .check-text { cursor: pointer; }
+    .check-text.done { text-decoration: line-through; color: var(--ink4); }
+
+    /* ── SEPARADOR ─────────────────────────────────────── */
+    hr { border: none; border-top: 1px solid var(--paper3); margin: 48px 0; }
+
+    /* ── FOOTER ────────────────────────────────────────── */
+    footer {
+      text-align: center; padding: 32px 40px;
+      border-top: 1px solid var(--paper3);
+      font-size: 12px; color: var(--ink4);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .content { padding: 0 20px 60px; }
+      .hero { padding: 48px 20px 40px; }
+      .hero h1 { font-size: 26px; }
+      header { padding: 0 20px; }
+      .header-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">Agente Datasul &mdash; Guia</div>
+  <nav class="header-nav">
+    <a href="#requisitos">Requisitos</a>
+    <a href="#chave">Chave API</a>
+    <a href="#uso">Como usar</a>
+    <a href="#exemplos">Exemplos</a>
+    <a href="#faq">FAQ</a>
+    <a href="agente.html" style="color:var(--accent);font-weight:500;">Abrir Agente</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">Guia para iniciantes</div>
+  <h1>Como usar o Agente Especialista em Datasul</h1>
+  <p>
+    Um passo a passo completo para qualquer pessoa conseguir usar o agente,
+    sem precisar instalar nada no computador.
+  </p>
+  <a href="agente.html" class="hero-cta">Abrir o Agente agora</a>
+</div>
+
+<div class="content">
+
+  <!-- INDICE -->
+  <div class="toc">
+    <div class="toc-title">Indice</div>
+    <ol>
+      <li><a href="#oqueeh">O que e este agente?</a></li>
+      <li><a href="#requisitos">O que voce precisa ter</a></li>
+      <li><a href="#chave">Como obter a chave de API</a></li>
+      <li><a href="#acessar">Como acessar o agente</a></li>
+      <li><a href="#uso">Como fazer uma pergunta</a></li>
+      <li><a href="#exemplos">Exemplos de perguntas</a></li>
+      <li><a href="#estrutura">Entendendo a resposta</a></li>
+      <li><a href="#checklist">Checklist de verificacao</a></li>
+      <li><a href="#faq">Perguntas frequentes</a></li>
+    </ol>
+  </div>
+
+  <!-- SECAO 1 -->
+  <section id="oqueeh">
+    <div class="section-number">Secao 01</div>
+    <h2>O que e este agente?</h2>
+    <p>
+      O Agente Datasul e um assistente de inteligencia artificial especializado no ERP Datasul
+      da TOTVS. Ele responde duvidas sobre modulos, rotinas, parametros, erros e processos
+      do sistema, consultando as fontes oficiais da TOTVS em tempo real, incluindo a
+      <strong>TDN (TOTVS Developer Network)</strong> e a Central de Atendimento.
+    </p>
+
+    <div class="callout info">
+      <span class="callout-icon">i</span>
+      <div>
+        Diferente de um chatbot generico, este agente segue uma politica estruturada de
+        atendimento: ele sempre identifica o modulo que voce esta usando, busca informacoes
+        oficiais antes de responder e apresenta a resposta em ordem didatica,
+        do mais simples ao mais tecnico.
+      </div>
+    </div>
+
+    <p>
+      Voce pode usar o agente diretamente pelo navegador, sem instalar nenhum programa
+      no seu computador. Funciona no Chrome, Firefox, Edge e Safari.
+    </p>
+  </section>
+
+  <!-- SECAO 2 -->
+  <section id="requisitos">
+    <div class="section-number">Secao 02</div>
+    <h2>O que voce precisa ter</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Um navegador atualizado</div>
+          <div class="step-desc">
+            Chrome, Edge, Firefox ou Safari em versao recente (2022 em diante).
+            Nao e necessario instalar nenhuma extensao.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Conexao com a internet</div>
+          <div class="step-desc">
+            O agente precisa se comunicar com a API da Anthropic para processar
+            suas perguntas e buscar fontes oficiais da TOTVS.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Uma chave de API da Anthropic</div>
+          <div class="step-desc">
+            Esta e a unica etapa que requer um cadastro externo. A chave e gratuita
+            para obter, mas o uso tem custo por volume de tokens consumidos.
+            A secao a seguir explica como obter a chave passo a passo.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECAO 3 -->
+  <section id="chave">
+    <div class="section-number">Secao 03</div>
+    <h2>Como obter a chave de API</h2>
+    <p>
+      A chave de API e como uma senha que identifica sua conta na Anthropic e
+      autoriza o uso do modelo Claude. Siga os passos abaixo:
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Acesse o console da Anthropic</div>
+          <div class="step-desc">
+            Abra o navegador e acesse:
+            <a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:var(--accent);">console.anthropic.com</a>.
+            Clique em <strong>Sign Up</strong> para criar uma conta gratuita, ou em
+            <strong>Log In</strong> se ja tiver uma.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Crie a chave de API</div>
+          <div class="step-desc">
+            Apos fazer login, va em <strong>API Keys</strong> no menu lateral.
+            Clique em <strong>Create Key</strong>, escolha um nome descritivo
+            (por exemplo: "Agente Datasul") e confirme.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Copie a chave imediatamente</div>
+          <div class="step-desc">
+            A chave sera exibida <strong>uma unica vez</strong>. Ela comeca com
+            <code>sk-ant-api03-</code>. Copie e guarde em local seguro (bloco de notas
+            criptografado, gerenciador de senhas, etc.). Se fechar a tela sem copiar,
+            precisara criar uma nova chave.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Configure o faturamento (billing)</div>
+          <div class="step-desc">
+            Para usar a API, e necessario adicionar um cartao de credito na secao
+            <strong>Billing</strong> do console. O uso e cobrado por tokens consumidos
+            (cada mensagem usa uma quantidade proporcional ao texto). Para consultas
+            tecnicas de ERP, o custo por sessao costuma ser baixo.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">!</span>
+      <div>
+        <strong>Importante:</strong> nunca compartilhe sua chave de API com outras pessoas.
+        Quem tiver a chave pode usar sua conta e gerar cobranças em seu nome.
+        Trate a chave como uma senha bancaria.
+      </div>
+    </div>
+  </section>
+
+  <!-- SECAO 4 -->
+  <section id="acessar">
+    <div class="section-number">Secao 04</div>
+    <h2>Como acessar o agente</h2>
+    <p>
+      Com a chave em maos, o acesso ao agente e feito em dois cliques.
+      Veja como a tela de configuracao funciona:
+    </p>
+
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dot r"></div>
+        <div class="mockup-dot y"></div>
+        <div class="mockup-dot g"></div>
+        <div class="mockup-url">agente.html</div>
+      </div>
+      <div class="mockup-body">
+        <div style="font-size:11px;font-family:var(--mono);letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;">TOTVS Datasul &mdash; Agente Especialista</div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:8px;">Insira sua chave de API</div>
+        <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;">Para usar o agente, voce precisa de uma chave da Anthropic (Claude). A chave fica armazenada somente no seu navegador.</div>
+        <div class="fake-field-label">Chave de API (API Key)</div>
+        <div class="fake-field">
+          <span style="letter-spacing:0.15em;color:var(--ink4);">sk-ant-api03-●●●●●●●●●●●●●●●●●●●●</span>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink4);margin:6px 0 16px;">Cole aqui a chave copiada do console.anthropic.com</div>
+        <div class="fake-btn">Acessar o Agente</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Abra o arquivo agente.html</div>
+          <div class="step-desc">
+            Faca duplo clique no arquivo <code>agente.html</code> para abrir no navegador.
+            Se recebeu um link, clique nele diretamente.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Cole a chave de API no campo</div>
+          <div class="step-desc">
+            Clique no campo de texto e cole a chave com <code>Ctrl+V</code> (Windows/Linux)
+            ou <code>Cmd+V</code> (Mac). O campo exibira pontos por seguranca.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Clique em "Acessar o Agente"</div>
+          <div class="step-desc">
+            O agente validara o formato da chave e abrira a interface de chat.
+            A chave sera salva no navegador para que voce nao precise inserir novamente
+            nas proximas visitas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <span class="callout-icon">✓</span>
+      <div>
+        A chave e armazenada apenas no <strong>localStorage</strong> do seu navegador,
+        no proprio dispositivo. Ela nao e enviada para nenhum servidor intermediario,
+        apenas diretamente para a API da Anthropic a cada mensagem enviada.
+      </div>
+    </div>
+  </section>
+
+  <!-- SECAO 5 -->
+  <section id="uso">
+    <div class="section-number">Secao 05</div>
+    <h2>Como fazer uma pergunta</h2>
+    <p>
+      Apos acessar o agente, voce vera a tela de chat com uma mensagem inicial
+      solicitando o modulo do Datasul. Este e o fluxo padrao:
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Informe o modulo</div>
+          <div class="step-desc">
+            O agente sempre pergunta o modulo antes de responder. Isso e intencional:
+            sem saber o modulo, a resposta poderia ser imprecisa. Responda com o nome
+            do modulo que esta usando, por exemplo: <em>"Financeiro"</em> ou
+            <em>"Estoque e Faturamento"</em>.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Digite sua duvida de forma clara</div>
+          <div class="step-desc">
+            Descreva o que esta tentando fazer ou qual erro encontrou.
+            Quanto mais contexto voce fornecer (versao do sistema, processo,
+            documento envolvido), mais precisa sera a resposta.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Aguarde a consulta nas fontes</div>
+          <div class="step-desc">
+            Quando o agente busca informacoes na TDN ou em fontes TOTVS, aparece
+            o indicador <strong>"Consultando fontes TOTVS..."</strong>.
+            Apos a busca, o indicador muda para <strong>"Consultou TDN / TOTVS"</strong>
+            na resposta.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Leia a resposta estruturada</div>
+          <div class="step-desc">
+            A resposta segue sempre a mesma ordem: resumo, explicacao simples,
+            detalhamento tecnico, como consultar no sistema, como buscar na TDN,
+            exemplo pratico e boas praticas. Voce pode ir diretamente para a
+            secao de interesse.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Continue a conversa</div>
+          <div class="step-desc">
+            O agente mantem o contexto de toda a conversa. Voce pode fazer
+            perguntas de acompanhamento sem repetir informacoes ja fornecidas.
+            Use <strong>Enter</strong> para enviar e
+            <strong>Shift+Enter</strong> para quebrar linha.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECAO 6 -->
+  <section id="exemplos">
+    <div class="section-number">Secao 06</div>
+    <h2>Exemplos de perguntas</h2>
+    <p>Veja como uma conversa tipica flui com o agente:</p>
+
+    <div class="mockup" style="margin-bottom:28px;">
+      <div class="mockup-bar">
+        <div class="mockup-dot r"></div>
+        <div class="mockup-dot y"></div>
+        <div class="mockup-dot g"></div>
+        <div class="mockup-url">agente.html &mdash; Exemplo de conversa</div>
+      </div>
+      <div class="mockup-body">
+        <div class="chat-example">
+          <div class="chat-msg bot">
+            <div class="chat-label">Agente Datasul</div>
+            <div class="chat-bubble">Para orientar corretamente, preciso saber: qual modulo do Datasul voce esta utilizando?</div>
+          </div>
+          <div class="chat-msg user">
+            <div class="chat-label">Voce</div>
+            <div class="chat-bubble">Modulo Financeiro</div>
+          </div>
+          <div class="chat-msg bot">
+            <div class="chat-label">Agente Datasul</div>
+            <div class="chat-bubble">Entendido. Qual e a sua duvida no modulo Financeiro do Datasul?</div>
+          </div>
+          <div class="chat-msg user">
+            <div class="chat-label">Voce</div>
+            <div class="chat-bubble">Como configurar o parametro de juros no contas a receber?</div>
+          </div>
+          <div class="chat-msg bot">
+            <div class="chat-label" style="display:flex;gap:8px;align-items:center;">
+              Agente Datasul
+              <span style="font-size:10px;color:var(--green);background:var(--green2);border:1px solid #b2ddc6;border-radius:20px;padding:1px 8px;">Consultou TDN / TOTVS</span>
+            </div>
+            <div class="chat-bubble">RESUMO EXECUTIVO
+A configuracao de juros no Contas a Receber do Datasul e feita no programa FIN0050 (Parametros Financeiros), onde sao definidas as regras de calculo aplicadas a titulos em atraso.
+
+EXPLICACAO SIMPLES
+Juros no contas a receber e o valor adicional cobrado do cliente quando um titulo nao e pago ate o vencimento. O Datasul permite configurar percentual fixo ou taxa diaria, com ou sem carencia.
+
+DETALHAMENTO TECNICO
+O sistema utiliza as tabelas FT-PARAM e FT-JUROS para armazenar as regras...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p><strong>Outros exemplos de perguntas que voce pode fazer:</strong></p>
+
+    <div class="steps" style="margin-top:12px;">
+      <div class="step">
+        <div class="step-num" style="background:var(--green);">→</div>
+        <div class="step-body">
+          <div class="step-title">Perguntas de configuracao</div>
+          <div class="step-desc">"Como parametrizar o tipo de pedido de compra no modulo de Suprimentos?" / "Qual o caminho no menu para configurar o centro de custo no modulo Contabil?"</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--green);">→</div>
+        <div class="step-body">
+          <div class="step-title">Perguntas sobre erros</div>
+          <div class="step-desc">"Aparece o erro 'Titulo bloqueado para edicao' no Financeiro. O que significa e como resolver?" / "O sistema nao permite fechar o periodo contabil. Quais as condicoes para o fechamento?"</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--green);">→</div>
+        <div class="step-body">
+          <div class="step-title">Perguntas sobre rotinas e programas</div>
+          <div class="step-desc">"Qual o programa do Datasul responsavel pela geracao do SPED Fiscal?" / "Existe alguma rotina de reprocessamento de custo no modulo de Estoque?"</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--green);">→</div>
+        <div class="step-body">
+          <div class="step-title">Perguntas sobre processos</div>
+          <div class="step-desc">"Qual a sequencia correta de processos para realizar um inventario no Datasul?" / "Como funciona a integracao entre o modulo de Faturamento e o Financeiro?"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECAO 7 -->
+  <section id="estrutura">
+    <div class="section-number">Secao 07</div>
+    <h2>Entendendo a resposta do agente</h2>
+    <p>
+      Toda resposta tecnica segue uma estrutura fixa de 7 partes.
+      Entender essa estrutura ajuda a navegar pela resposta de forma eficiente:
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">a</div>
+        <div class="step-body">
+          <div class="step-title">Resumo executivo</div>
+          <div class="step-desc">Uma ou duas frases descrevendo o que sera tratado. Ideal para confirmar que o agente entendeu corretamente sua duvida.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">b</div>
+        <div class="step-body">
+          <div class="step-title">Explicacao simples</div>
+          <div class="step-desc">O conceito explicado de forma clara e acessivel, sem jargao tecnico. Ponto de partida para quem esta aprendendo o processo.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">c</div>
+        <div class="step-body">
+          <div class="step-title">Detalhamento tecnico</div>
+          <div class="step-desc">Como o Datasul trata o processo internamente, quais regras se aplicam, quais pontos de atencao existem. Secao para usuarios intermediarios e avancados.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">d</div>
+        <div class="step-body">
+          <div class="step-title">Como consultar no sistema</div>
+          <div class="step-desc">Nome do programa, caminho no menu, tabelas do banco de dados relacionadas, parametros e nome tecnico da rotina. Secao pratica para localizar o recurso no Datasul.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">e</div>
+        <div class="step-body">
+          <div class="step-title">Consulta na TDN</div>
+          <div class="step-desc">Termos recomendados para pesquisa na documentacao oficial da TOTVS, com link para a pagina quando disponivel.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">f</div>
+        <div class="step-body">
+          <div class="step-title">Exemplo pratico</div>
+          <div class="step-desc">Um cenario real de negocio mostrando como o usuario aplicaria o conceito no dia a dia dentro do Datasul.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--ink2);font-size:11px;">g</div>
+        <div class="step-body">
+          <div class="step-title">Boas praticas e cuidados</div>
+          <div class="step-desc">Riscos comuns, impactos em outros modulos, necessidade de testes em ambiente de homologacao e recomendacoes de backup. Leia sempre esta secao antes de executar uma alteracao em producao.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- CHECKLIST -->
+  <section id="checklist">
+    <div class="section-number">Secao 08</div>
+    <h2>Checklist antes de comecar</h2>
+    <p>Marque cada item conforme for concluindo:</p>
+
+    <div class="checklist" id="checklist-items">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Tenho um navegador atualizado (Chrome, Edge, Firefox ou Safari)</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Criei uma conta em console.anthropic.com</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Adicionei um metodo de pagamento no Billing do console</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Criei e copiei minha chave de API (comeca com sk-ant-)</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Guardei a chave em local seguro</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Abri o arquivo agente.html no navegador</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Colei a chave na tela de configuracao e acessei o agente</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Enviei a primeira mensagem informando o modulo do Datasul</div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-number">Secao 09</div>
+    <h2>Perguntas frequentes</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">O agente funciona sem internet?</div>
+      <div class="faq-a">Nao. O agente precisa de conexao com a internet para enviar a pergunta a API da Anthropic e para buscar informacoes nas fontes oficiais da TOTVS em tempo real.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Minha chave de API e salva onde?</div>
+      <div class="faq-a">A chave e salva no localStorage do seu proprio navegador, no seu dispositivo. Nenhum servidor intermediario armazena ou ve a chave. Ao clicar em "Sair", ela e removida imediatamente do navegador.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Qual o custo de uso?</div>
+      <div class="faq-a">O custo e cobrado diretamente pela Anthropic por tokens consumidos. Para consultas tecnicas de ERP, cada interacao consome uma quantidade moderada de tokens. Voce pode monitorar o consumo no painel de billing em console.anthropic.com. Nao ha cobrança pelo agente em si.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">O agente acessa o meu sistema Datasul?</div>
+      <div class="faq-a">Nao. O agente nao tem acesso ao seu banco de dados, instancia ou sistema Datasul. Ele consulta apenas a documentacao publica oficial da TOTVS (TDN e fontes relacionadas) para formular respostas. Nenhum dado do seu ambiente e enviado.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">O agente pode errar nas respostas?</div>
+      <div class="faq-a">Sim. Embora o agente siga uma politica estrita de nao inventar informacoes e priorizar fontes oficiais, erros podem ocorrer. Sempre valide as informacoes em ambiente de homologacao antes de aplicar em producao, especialmente para configuracoes criticas.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Como compartilhar o agente com minha equipe?</div>
+      <div class="faq-a">Distribua o arquivo agente.html para os membros da equipe. Cada pessoa precisara de sua propria chave de API da Anthropic. Nao compartilhe sua chave pessoal.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">O agente cobre todas as versoes do Datasul?</div>
+      <div class="faq-a">O agente busca as informacoes mais recentes disponiveis na TDN. Para versoes mais antigas, pode haver divergencias. O agente e instruido a avisar explicitamente quando uma informacao precisa ser validada por versao.</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Agente Datasul &mdash; Especialista ERP TOTVS &nbsp;&middot;&nbsp;
+  <a href="agente.html">Abrir o Agente</a> &nbsp;&middot;&nbsp;
+  Fontes: <a href="https://tdn.totvs.com" target="_blank" rel="noopener">tdn.totvs.com</a>
+</footer>
+
+<script>
+  function toggleCheck(item) {
+    const box  = item.querySelector(".check-box");
+    const text = item.querySelector(".check-text");
+    box.classList.toggle("done");
+    text.classList.toggle("done");
+  }
+</script>
+</body>
+</html>
